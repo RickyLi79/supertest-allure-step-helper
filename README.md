@@ -42,7 +42,8 @@ $ npm i -D supertest-allure-step-helper
 #### Example
 [./allure.test/example.allure.ts](./allure.test/example.allure.ts)
 
-#### Example Report Html
-[https://rickyli79.github.io/testing-reports/supertest-allure-step-helper/allure-report/](https://rickyli79.github.io/testing-reports/supertest-allure-step-helper/allure-report/)
+#### Example Report HTML
+- https://rickyli79.github.io/testing-reports/supertest-allure-step-helper/allure-report/
+- https://rickyli79.gitee.io/testing-reports/supertest-allure-step-helper/allure-report/
 
 
