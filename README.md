@@ -1,6 +1,6 @@
 # supertest-allure-step-helper
 
-#### Introducs
+#### Introduce
 turns the calls of `supertest` to `allure.createStep()`
 
 #### Install
