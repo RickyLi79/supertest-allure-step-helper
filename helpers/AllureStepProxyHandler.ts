@@ -1,17 +1,14 @@
 import { ContentType, Status } from 'allure-js-commons';
 import { allure } from 'allure-mocha/runtime';
-import assert from 'assert';
-import { TEST_RESPONSE_HEADER_CONTROLLER_FILE, TEST_RESPONSE_HEADER_REQUEST_SCHEMA } from './Test-Response-Header';
 import { attachmentJson, attachmentJsonByObj, attachmentUtf8File, attachmentUtf8FileAuto, logStep, logStepWithTime, runStepWithInfo } from './AllureHelper';
+import { TEST_RESPONSE_HEADER_CONTROLLER_FILE, TEST_RESPONSE_HEADER_REQUEST_SCHEMA } from './Test-Response-Header';
+
 declare module 'supertest'
 {
   interface Test {
-    expectHeader(field:string, val:string):this;
+    expectHeader(field: string, val: string): this;
     endAllureStep(): Promise<void>;
   }
-
-  interface Request { }
-
 }
 declare module 'superagent'
 {
@@ -161,15 +158,6 @@ class AllureStepProxyHandler<T extends object> implements ProxyHandler<T> {
     if (property === TOP_PROXY_PREFIX) {
       return target[property];
     }
-    if (property === 'dispose') {
-      return () => {
-        // console.log('disposed');
-        if (!this.end) {
-          throw Error('run `endAllureStep` first');
-        }
-        AllureStepProxyHandler.applyStack.delete(this.target);
-      };
-    }
     if (property === 'endAllureStep') {
       return async (brokenIfError = true) => {
         const statusIfErr: Status = brokenIfError ? Status.BROKEN : Status.FAILED;
@@ -188,9 +176,14 @@ class AllureStepProxyHandler<T extends object> implements ProxyHandler<T> {
             assertStockIdx = Number.parseInt(idx);
           }
           if (iStack.pKey === 'expectHeader') {
-            re = re.expect(function(field:string, val:string) {
+            re = re.expect(function (field: string, val: string) {
               return res => {
-                assert.strictEqual(res.get(field), val);
+                const gotHeader = res.get(field);
+                if ( gotHeader !== val)
+                {
+                  // return new Error('expected header[]' + status + ' "' + a + '", got ' + res.status + ' "' + b + '"');
+                  return new Error(`expected header['${field}'] => '${val}' , got '${gotHeader}'`);
+                }
               };
             }(iStack.argArray[0], iStack.argArray[1]));
           } else {
@@ -224,12 +217,13 @@ class AllureStepProxyHandler<T extends object> implements ProxyHandler<T> {
 
         let topStepName = topKey;
         runStepWithInfo(() => {
-          let err = requestErr && !requestErr?.message.startsWith('expected');
+          const expectErr = !requestErr?.message.startsWith('expected ')
+          let err = requestErr && expectErr;
           let lastStatus = Status.PASSED;
           let firstAssertStep = true;
+          let connectionRefused = false;
           for (const idx in stack) {
             const iStack = stack[idx];
-
             // #region enabled by server debug
             if (iStack.pKey === 'attachment') {
               // eslint-disable-next-line prefer-spread
@@ -248,10 +242,11 @@ class AllureStepProxyHandler<T extends object> implements ProxyHandler<T> {
                 status = Status.PASSED;
                 lastStatus = statusIfErr;
               } else {
-                if (!requestErr.message.startsWith('expected') && firstAssertStep) {
+                if (expectErr && firstAssertStep) {
                   firstAssertStep = false;
                   logStepWithTime(requestErr.message, statusIfErr, start, stop);
                   topStepName += `.${errChar}x${errChar}`;
+                  connectionRefused = true;
                 }
                 status = Status.SKIPPED;
               }
@@ -270,27 +265,32 @@ class AllureStepProxyHandler<T extends object> implements ProxyHandler<T> {
           }
           attachmentJsonByObj({
             Request: {
+              url: re.url,
               path: re.req.path,
               method: re.req.method,
               headers: re.req._headers,
               body: re._data,
             },
-            Response: {
-              headers: re.res.headers,
-              body: re.res.body,
-            },
-          });
-          {
+          })
+          if (!connectionRefused) {
+            attachmentJsonByObj({
+              Response: {
+                headers: re.res.headers,
+                body: re.res.body,
+              },
+            });
             {
-              const toFile = re.res.headers[TEST_RESPONSE_HEADER_CONTROLLER_FILE];
-              if (toFile) {
-                attachmentUtf8FileAuto(toFile);
+              {
+                const toFile = re.res.headers[TEST_RESPONSE_HEADER_CONTROLLER_FILE];
+                if (toFile) {
+                  attachmentUtf8FileAuto(toFile);
+                }
               }
-            }
-            {
-              const reqSchema = re.res.headers[TEST_RESPONSE_HEADER_REQUEST_SCHEMA];
-              if (reqSchema) {
-                attachmentJson('Request Schema', JSON.parse(reqSchema));
+              {
+                const reqSchema = re.res.headers[TEST_RESPONSE_HEADER_REQUEST_SCHEMA];
+                if (reqSchema) {
+                  attachmentJson('Request Schema', JSON.parse(reqSchema));
+                }
               }
             }
           }

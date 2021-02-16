@@ -11,6 +11,7 @@
     "allowJs": false,
     "pretty": true,
     "noEmitOnError": false,
+    "declaration": false,
     // "noUnusedLocals": false,
     // "noUnusedParameters": true,
     // "allowUnreachableCode": false,
@@ -19,11 +20,12 @@
     // "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "inlineSourceMap": true,
+    "inlineSourceMap": false,
+    "sourceMap": true,
     "importHelpers": true,
     "esModuleInterop": true
   },
   "exclude": [
     "node_modules*",
-  ]
+  ],
 }

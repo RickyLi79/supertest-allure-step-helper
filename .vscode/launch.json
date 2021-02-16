@@ -1,0 +1,48 @@
+{
+  // 使用 IntelliSense 了解相关属性。 
+  // 悬停以查看现有属性的描述。
+  // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "test",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceRoot}",
+      "runtimeExecutable": "npm",
+      "windows": {
+        "runtimeExecutable": "npm.cmd"
+      },
+      "runtimeArgs": [
+        "run",
+        "test"
+      ],
+      "protocol": "auto",
+      "restart": false,
+      "port": 9229,
+      "autoAttachChildProcesses": true,
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "name": "allure:test",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceRoot}",
+      "runtimeExecutable": "npm",
+      "windows": {
+        "runtimeExecutable": "npm.cmd"
+      },
+      "runtimeArgs": [
+        "run",
+        "allure:test"
+      ],
+      "protocol": "auto",
+      "restart": false,
+      "port": 9229,
+      "autoAttachChildProcesses": true,
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart"
+    },
+  ]
+}

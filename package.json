@@ -1,16 +1,40 @@
 {
   "name": "supertest-allure-step-helper",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "allure helper for supertest",
   "main": "index.js",
+  "keywords": [
+    "mocha",
+    "supertest",
+    "allure",
+    "helper"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test/*.test.js",
+    "allure": "npm run allure:test && npm run allure:report",
+    "allure:report": "allure generate allure-results --clean -o allure-report && allure open -h localhost -p 5501 allure-report",
+    "allure:test": "mocha -R mocha-multi-reporters --reporter-options configFile=mocha-multi-reporters.json --require ts-node/register --timeout 5000 --colors allure.test/**/*.allure.ts"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": {
+    "name": "RickyLi79",
+    "email": "382688672@qq.com",
+    "url": "https://github.com/RickyLi79/"
+  },
+  "homepage": "https://github.com/RickyLi79/supertest-allure-step-helper",
+  "typings": "index.ts",
+  
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RickyLi79/supertest-allure-step-helper.git"
+  },
   "devDependencies": {
+    "@types/mocha": "^8.2.0",
     "@types/supertest": "^2.0.10",
+    "mocha": "^8.3.0",
+    "mocha-multi-reporters": "^1.5.1",
+    "supertest": "^6.1.3",
+    "ts-node": "^9.1.1",
     "typescript": "^4.1.5"
   },
   "dependencies": {
