@@ -1,5 +1,13 @@
 # supertest-allure-step-helper
 
+[![NPM version][npm-image]][npm-url]
+[![npm download][download-image]][download-url]
+
+[npm-image]: https://img.shields.io/npm/v/supertest-allure-step-helper.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/supertest-allure-step-helper
+[download-image]: https://img.shields.io/npm/dm/supertest-allure-step-helper.svg?style=flat-square
+[download-url]: https://npmjs.org/package/supertest-allure-step-helper
+
 #### Introduce
 turns the calls of `supertest` to `allure.createStep()`
 

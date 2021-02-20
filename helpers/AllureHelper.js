@@ -132,7 +132,7 @@ function writePackageVerToEnvironmentInfo(appDir, packageName, projectVer = true
         const fsContent = fs_1.default.readFileSync(iFile, 'utf-8');
         const fsJson = JSON.parse(fsContent);
         const ver = fsJson.version;
-        info[`package : ${iPackageName}`] = ver;
+        info[`dep : ${iPackageName}`] = "v" + ver;
     }
     runtime_1.allure.writeEnvironmentInfo(info);
 }
