@@ -119,8 +119,14 @@ function attachmentUtf8FileAuto(filename) {
     attachmentUtf8File(name, filename);
 }
 exports.attachmentUtf8FileAuto = attachmentUtf8FileAuto;
-function writePackageVerToEnvironmentInfo(appDir, packageName) {
+function writePackageVerToEnvironmentInfo(appDir, packageName, projectVer = true) {
     const info = {};
+    if (projectVer) {
+        const packageContent = fs_1.default.readFileSync(path_1.default.join(appDir, 'package.json'), 'utf-8');
+        const fsJson = JSON.parse(packageContent);
+        const { name, version } = fsJson;
+        info[`project : ${name}`] = version;
+    }
     for (const iPackageName of packageName) {
         const iFile = path_1.default.join(appDir, 'node_modules', iPackageName, 'package.json');
         const fsContent = fs_1.default.readFileSync(iFile, 'utf-8');
