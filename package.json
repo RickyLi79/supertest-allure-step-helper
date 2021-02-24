@@ -1,11 +1,10 @@
 {
   "name": "supertest-allure-step-helper",
-  "version": "0.2.2",
+  "version": "0.2.7",
   "publishConfig": {
     "access": "public"
   },
   "description": "allure helper for supertest",
-  "main": "index.js",
   "keywords": [
     "mocha",
     "supertest",
@@ -13,7 +12,7 @@
     "helper"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "test": "mocha test/*.test.js",
     "allure": "npm run allure:test && npm run allure:report",
     "allure:report": "allure generate allure-results --clean -o allure-report && allure open -h localhost -p 5501 allure-report",
@@ -25,7 +24,6 @@
     "url": "https://github.com/RickyLi79/"
   },
   "homepage": "https://github.com/RickyLi79/supertest-allure-step-helper",
-  "typings": "index.ts",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -51,5 +49,11 @@
     "Programming Languages",
     "Testing",
     "Visualization"
-  ]
+  ],
+  "files": [
+    "dist",
+    "demo"
+  ],
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts"
 }

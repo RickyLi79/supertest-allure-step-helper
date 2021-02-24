@@ -9,9 +9,11 @@
     "emitDecoratorMetadata": true,
     "charset": "utf8",
     "allowJs": false,
+    "outDir": "./dist",
+    "rootDir": ".",
     "pretty": true,
     "noEmitOnError": true,
-    // "declaration": true,
+    "declaration": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "allowUnreachableCode": true,
@@ -25,9 +27,8 @@
     "importHelpers": true,
     "esModuleInterop": true
   },
-  "exclude": [
-    "allure-report",
-    "allure-results",
-    "node_modules*"
+  "include": [
+    "index.ts",
+    "helpers/"
   ],
 }

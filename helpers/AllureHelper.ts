@@ -9,7 +9,7 @@ export function runStep<T>(stepName: string, action: () => T): T {
   return allure.createStep(stepName, action)();
 }
 
-export function logStep(stepName: string, status: Status, err?:Error) {
+export function logStep(stepName: string, status: Status, err?: Error) {
   let currItem!: ExecutableItemWrapper;
   allure.createStep(stepName, () => {
     currItem = allure.currentExecutable;
@@ -108,18 +108,32 @@ export function attachmentUtf8File(name: string, filename: string, addFirstLineC
 
 }
 
-export function attachmentUtf8FileAuto(filename: string) {
+export function attachmentUtf8FileAuto(filename: string, exts?: string[]) {
   const name = '${baseDir}/' + path.relative(config.baseDir, filename);
-  attachmentUtf8File(name, filename);
+  if (exts) {
+    let attached = false;
+    for (const iExt of exts) {
+      if (fs.existsSync(filename + iExt)) {
+        attached = true;
+        attachmentUtf8File(name, filename + iExt);
+        break;
+      }
+    }
+    if (!attached) {
+      attachmentUtf8File(name, filename + exts[exts.length - 1]);
+    }
+  }
+  else
+    attachmentUtf8File(name, filename);
 }
 
-export function writePackageVerToEnvironmentInfo(appDir:string, packageName:string[], projectVer=true) {
-  const info:{[key:string]:string} = {};
+export function writePackageVerToEnvironmentInfo(appDir: string, packageName: string[], projectVer = true) {
+  const info: { [key: string]: string } = {};
 
-  if ( projectVer ){
-    const packageContent =  fs.readFileSync(path.join(appDir,  'package.json'), 'utf-8');
+  if (projectVer) {
+    const packageContent = fs.readFileSync(path.join(appDir, 'package.json'), 'utf-8');
     const fsJson = JSON.parse(packageContent);
-    const {name,version} = fsJson;
+    const { name, version } = fsJson;
     info[`project : ${name}`] = version;
   }
 
@@ -128,7 +142,7 @@ export function writePackageVerToEnvironmentInfo(appDir:string, packageName:stri
     const fsContent = fs.readFileSync(iFile, 'utf-8');
     const fsJson = JSON.parse(fsContent);
     const ver = fsJson.version;
-    info[`dep : ${iPackageName}`] = "v"+ver;
+    info[`dep : ${iPackageName}`] = "v" + ver;
   }
   allure.writeEnvironmentInfo(info);
 }

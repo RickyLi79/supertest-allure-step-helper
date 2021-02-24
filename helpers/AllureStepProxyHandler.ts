@@ -1,20 +1,22 @@
 import { ContentType, Status } from 'allure-js-commons';
 import { allure } from 'allure-mocha/runtime';
+import { SuperAgentTest } from 'supertest';
 import { attachmentJson, attachmentJsonByObj, attachmentUtf8File, attachmentUtf8FileAuto, logStep, logStepWithTime, runStepWithInfo } from './AllureHelper';
 import { TEST_RESPONSE_HEADER_CONTROLLER_FILE, TEST_RESPONSE_HEADER_REQUEST_SCHEMA } from './Test-Response-Header';
+import superagent from "superagent";
 
 declare module 'supertest'
 {
   interface Test {
+    stepName(str: string): this;
     expectHeader(field: string, val?: string): this;
     endAllureStep(): Promise<void>;
   }
-}
-declare module 'superagent' {
-  interface SuperAgent<Req extends SuperAgentRequest> {
-      stepName(str: string): this;
-      attachment(name: string, content: string | Buffer, contentType: ContentType): this;
-      attachmentFile(name: string, filename: string): this;
+
+  interface SuperTest<T extends superagent.SuperAgentRequest> {
+    stepName(str: string): this;
+    attachment(name: string, content: string | Buffer, contentType: ContentType): this;
+    attachmentFile(name: string, filename: string): this;
   }
 }
 
@@ -107,7 +109,7 @@ function getStackStepName(stack: StackType, isPassed: boolean, short: boolean) {
   const arr: string[] = [];
   for (const i of stack.argArray) {
     if (typeof i !== 'function') {
-      let item = i===undefined ? 'undefined' : JSON.stringify(i);
+      let item = i === undefined ? 'undefined' : JSON.stringify(i);
       if (short) {
         if (item.length > maxStepNameLenHalf * 2) {
           item = `${item.substr(0, maxStepNameLenHalf)}...${item.substr(-maxStepNameLenHalf)}`;
@@ -123,7 +125,7 @@ function getStackStepName(stack: StackType, isPassed: boolean, short: boolean) {
 
 class AllureStepProxyHandler<T extends object> implements ProxyHandler<T> {
 
-  public static create<T extends object>(target: T): T {
+  public static create<T extends SuperAgentTest>(target: T): T {
     const handler = new AllureStepProxyHandler(target, topKey);
     const p = new Proxy(target, handler);
     p[TOP_PROXY_PREFIX] = '';
@@ -281,7 +283,7 @@ class AllureStepProxyHandler<T extends object> implements ProxyHandler<T> {
               {
                 const toFile = re.res.headers[TEST_RESPONSE_HEADER_CONTROLLER_FILE];
                 if (toFile) {
-                  attachmentUtf8FileAuto(toFile);
+                  attachmentUtf8FileAuto(toFile, ['.ts', '.js']);
                 }
               }
               {
