@@ -66,7 +66,8 @@ export function attachmentJsonByObj(data: { [name: string]: any }) {
 export function attachmentUtf8File(name: string, filename: string, addFirstLineContent?: string) {
   let str: string;
   let contentType: ContentType;
-  if (!fs.existsSync(filename) || !fs.statSync(filename).isFile()) {
+  let notFound = !fs.existsSync(filename) || !fs.statSync(filename).isFile();
+  if (notFound) {
     str = '< file not found >';
     contentType = ContentType.TEXT;
   } else {
@@ -104,8 +105,7 @@ export function attachmentUtf8File(name: string, filename: string, addFirstLineC
   if (addFirstLineContent) {
     str = addFirstLineContent + '\r\n\r\n' + str;
   }
-  allure.attachment(name, str, contentType);
-
+  allure.attachment(name + (notFound ? '  < file not found >' : ''), str, contentType);
 }
 
 export function attachmentUtf8FileAuto(filename: string, exts?: string[]) {
@@ -115,12 +115,12 @@ export function attachmentUtf8FileAuto(filename: string, exts?: string[]) {
     for (const iExt of exts) {
       if (fs.existsSync(filename + iExt)) {
         attached = true;
-        attachmentUtf8File(name, filename + iExt);
+        attachmentUtf8File(name + iExt, filename + iExt);
         break;
       }
     }
     if (!attached) {
-      attachmentUtf8File(name, filename + exts[exts.length - 1]);
+      attachmentUtf8File(name + exts[exts.length - 1], filename + exts[exts.length - 1]);
     }
   }
   else
