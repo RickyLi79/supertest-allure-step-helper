@@ -6,18 +6,18 @@ import { TEST_RESPONSE_HEADER_CONTROLLER_FILE, TEST_RESPONSE_HEADER_REQUEST_SCHE
 declare module 'supertest'
 {
   interface Test {
-    expectHeader(field: string, val: string): this;
+    expectHeader(field: string, val?: string): this;
     endAllureStep(): Promise<void>;
   }
 }
-declare module 'superagent'
-{
+declare module 'superagent' {
   interface SuperAgent<Req extends SuperAgentRequest> {
-    stepName(str: string): this;
-    attachment(name: string, content: string | Buffer, contentType: ContentType): this;
-    attachmentFile(name: string, filename: string): this;
+      stepName(str: string): this;
+      attachment(name: string, content: string | Buffer, contentType: ContentType): this;
+      attachmentFile(name: string, filename: string): this;
   }
 }
+
 
 const propertyKeysOfTest = {
   serverAddress: true,
@@ -96,7 +96,6 @@ const propertyKeysToProxy = {
   attachmentFile: true,
   expectHeader: true,
 };
-
 type StackType = { pKey: PropertyKey, argArray?: any };
 const TOP_PROXY_PREFIX = Symbol('TopProxy#prefix');
 const topKey = 'supertest';
@@ -108,7 +107,7 @@ function getStackStepName(stack: StackType, isPassed: boolean, short: boolean) {
   const arr: string[] = [];
   for (const i of stack.argArray) {
     if (typeof i !== 'function') {
-      let item = JSON.stringify(i);
+      let item = i===undefined ? 'undefined' : JSON.stringify(i);
       if (short) {
         if (item.length > maxStepNameLenHalf * 2) {
           item = `${item.substr(0, maxStepNameLenHalf)}...${item.substr(-maxStepNameLenHalf)}`;
@@ -176,11 +175,10 @@ class AllureStepProxyHandler<T extends object> implements ProxyHandler<T> {
             assertStockIdx = Number.parseInt(idx);
           }
           if (iStack.pKey === 'expectHeader') {
-            re = re.expect(function (field: string, val: string) {
+            re = re.expect(function (field: string, val?: string) {
               return res => {
                 const gotHeader = res.get(field);
-                if ( gotHeader !== val)
-                {
+                if (gotHeader !== val) {
                   // return new Error('expected header[]' + status + ' "' + a + '", got ' + res.status + ' "' + b + '"');
                   return new Error(`expected header['${field}'] => '${val}' , got '${gotHeader}'`);
                 }
@@ -317,7 +315,7 @@ class AllureStepProxyHandler<T extends object> implements ProxyHandler<T> {
 
   protected static applyStack: Map<any, StackType[]> = new Map();
 
-  protected firstApply: Promise<any>;
+  protected firstApply!: Promise<any>;
   apply(_target: any, _thisArg: any, argArray?: any): any {
     if (this.pKey === 'stepName') {
       this.topProxy[TOP_PROXY_PREFIX] = argArray[0] + ' : ';

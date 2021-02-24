@@ -84,7 +84,7 @@ function getStackStepName(stack, isPassed, short) {
     const arr = [];
     for (const i of stack.argArray) {
         if (typeof i !== 'function') {
-            let item = JSON.stringify(i);
+            let item = i === undefined ? 'undefined' : JSON.stringify(i);
             if (short) {
                 if (item.length > maxStepNameLenHalf * 2) {
                     item = `${item.substr(0, maxStepNameLenHalf)}...${item.substr(-maxStepNameLenHalf)}`;
@@ -290,4 +290,3 @@ class AllureStepProxyHandler {
 }
 AllureStepProxyHandler.applyStack = new Map();
 exports.AllureStepProxy = AllureStepProxyHandler;
-//# sourceMappingURL=AllureStepProxyHandler.js.map

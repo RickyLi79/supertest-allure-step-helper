@@ -137,4 +137,3 @@ function writePackageVerToEnvironmentInfo(appDir, packageName, projectVer = true
     runtime_1.allure.writeEnvironmentInfo(info);
 }
 exports.writePackageVerToEnvironmentInfo = writePackageVerToEnvironmentInfo;
-//# sourceMappingURL=AllureHelper.js.map
